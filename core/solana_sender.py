@@ -3,22 +3,28 @@ from solana.rpc.async_api import AsyncClient
 from solders.pubkey import Pubkey
 from solders.keypair import Keypair
 from solders.transaction import Transaction
-from solders.instruction import Instruction
 from solders.system_program import transfer
-from data import config
+from data.config import PRIVATE_KEY
+from utils.logger import logger
 
+SOL_TO_LAMPORTS = 1_000_000_000
 
 class Wallet:
-    PRIVATE_KEY = config.PRIVATE_KEY
-
+    
     def __init__(self, recipient: str, private_key=PRIVATE_KEY):
-        self.client = AsyncClient("https://api.mainnet-beta.solana.com")
+        self.client = AsyncClient("https://api.testnet.solana.com")
         self.keypair = Keypair.from_bytes(private_key)
         self.recipient = recipient
 
 
-    async def send(self, recipient: str, amount: int):
+    def get_balance(self):
+        balance = self.client.get_balance(self.keypair.pubkey)
+        return balance['result']['value'] / SOL_TO_LAMPORTS
+
+
+    async def send(self, recipient: str, amount: float):
         try:
+            amount *= SOL_TO_LAMPORTS
             transaction = Transaction().add(
                 transfer(
                     from_pubkey=self.keypair.pubkey,
@@ -28,9 +34,9 @@ class Wallet:
             )
 
             response = await self.client.send_transaction(transaction, self.keypair)
-            print(f'Sent {amount} lamports to {recipient}: {response}')
+            logger.success(f'Successfully sent {amount} SOL to {recipient}: {response}')
         except Exception as e:
-            print(f'Error sending to {recipient}: {e}')
+            logger.error(f'Error sending to {recipient}: {e}')
 
     
     async def close(self):
