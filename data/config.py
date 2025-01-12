@@ -1,1 +1,1 @@
-PRIVATE_KEY = ''    # Paste you sol private key here
+PRIVATE_KEY = ''    # Paste your solana private key here

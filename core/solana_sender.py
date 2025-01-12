@@ -1,25 +1,25 @@
-import asyncio
 from solana.rpc.async_api import AsyncClient
 from solders.pubkey import Pubkey
 from solders.keypair import Keypair
 from solders.transaction import Transaction
 from solders.system_program import transfer
-from data.config import PRIVATE_KEY
 from utils.logger import logger
+from base58 import b58decode
+from data.config import PRIVATE_KEY
 
 SOL_TO_LAMPORTS = 1_000_000_000
 
 class Wallet:
     
-    def __init__(self, recipient: str, private_key=PRIVATE_KEY):
-        self.client = AsyncClient("https://api.testnet.solana.com")
+    def __init__(self, recipient: str, private_key=b58decode(PRIVATE_KEY)):
+        self.client = AsyncClient("https://api.mainnet-beta.solana.com")
         self.keypair = Keypair.from_bytes(private_key)
         self.recipient = recipient
+    
 
-
-    def get_balance(self):
-        balance = self.client.get_balance(self.keypair.pubkey)
-        return balance['result']['value'] / SOL_TO_LAMPORTS
+    async def get_balance(self):
+        balance = await self.client.get_balance(self.keypair.pubkey())
+        return balance.value / SOL_TO_LAMPORTS
 
 
     async def send(self, recipient: str, amount: float):
