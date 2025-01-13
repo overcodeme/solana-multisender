@@ -24,17 +24,27 @@ class Wallet:
 
     async def send(self, recipient: str, amount: float):
         try:
-            amount *= SOL_TO_LAMPORTS
-            transaction = Transaction().add(
-                transfer(
-                    from_pubkey=self.keypair.pubkey,
-                    to_pubkey=Pubkey.from_string(recipient),
-                    lamports=amount
-                )
+            lamports = int(amount * SOL_TO_LAMPORTS)
+
+            recent_blockhash_response = await self.client.get_latest_blockhash()
+            blockhash = recent_blockhash_response.value.blockhash
+
+            # Создаем сообщение для транзакции
+            message = transfer(
+                from_pubkey=self.keypair.pubkey(),
+                to_pubkey=Pubkey.from_string(recipient),
+                lamports=lamports
+            )
+
+            # Создаем транзакцию с необходимыми параметрами
+            transaction = Transaction(
+                from_keypairs=[self.keypair],
+                message=message,
+                recent_blockhash=blockhash
             )
 
             response = await self.client.send_transaction(transaction, self.keypair)
-            logger.success(f'Successfully sent {amount} SOL to {recipient}: {response}')
+            logger.success(f'Successfully sent {amount} SOL to {recipient}. Transaction ID: {response["result"]}')
         except Exception as e:
             logger.error(f'Error sending to {recipient}: {e}')
 
