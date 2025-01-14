@@ -1,10 +1,10 @@
 import asyncio
-from core.solana_sender import Wallet
+from core.solana_sender import Sender
 from utils.logger import logger
 
 
 async def main():
-    wallet = Wallet(recipient=None)
+    wallet = Sender()
     balance = await wallet.get_balance()
     print(f'Wallet balance: {balance} SOL')
 
@@ -21,7 +21,8 @@ async def main():
         await asyncio.gather(*tasks)
         await wallet.close()
 
-        logger.info(f'Wallet balance after all transactions: {wallet.get_balance()}')
+        logger.info(f'Wallet balance after all transactions: {await wallet.get_balance()}')
+
     except:
         logger.error(f'Not enough SOL for all transactions')
 
