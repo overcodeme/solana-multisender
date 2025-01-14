@@ -40,7 +40,7 @@ class Sender:
             message = MessageV0.try_compile(
                 payer = self.keypair.pubkey(),
                 instructions = [ix],
-                address_lookup_table_accounts=[],
+                address_lookup_table_accounts = [],
                 recent_blockhash = blockhash
             )
 
