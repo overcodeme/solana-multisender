@@ -2,7 +2,7 @@ from solana.rpc.async_api import AsyncClient
 from solders.pubkey import Pubkey
 from solders.keypair import Keypair
 from solders.system_program import TransferParams, transfer
-from solders.transaction import Transaction, VersionedTransaction
+from solders.transaction import VersionedTransaction
 from solders.message import MessageV0
 from utils.logger import logger
 from data.config import PRIVATE_KEY
@@ -19,6 +19,11 @@ class Sender:
     async def get_balance(self):
         balance = await self.client.get_balance(self.keypair.pubkey())
         return balance.value / SOL_TO_LAMPORTS
+    
+
+    def get_gas_fee(self):
+        response = self.client.get_latest_blockhash()
+        return response
 
 
     async def send(self, recipient: str, amount: float):
