@@ -1,6 +1,9 @@
 import asyncio
 from core.sender import Sender
 from utils.logger import logger
+import os
+
+os.system('cls' if os.name == 'nt' else 'clear')
 
 wallet=Sender()
 address_list = []
@@ -21,7 +24,7 @@ async def main():
         if choice == '1':
             print(f'Wallet balance: {await wallet.get_balance()} SOL')
         elif choice == '2':
-            print(wallet.get_gas_fee())
+            print(f'Current gas_fee: {await wallet.get_gas_fee()} SOL')
         elif choice == '3':
             try:
                 sol_amount = float(input('Input SOL amount: '))

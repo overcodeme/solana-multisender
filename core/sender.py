@@ -6,6 +6,7 @@ from solders.transaction import VersionedTransaction
 from solders.message import MessageV0
 from utils.logger import logger
 from data.config import PRIVATE_KEY
+import requests
 
 SOL_TO_LAMPORTS = 1_000_000_000
 
@@ -21,9 +22,35 @@ class Sender:
         return balance.value / SOL_TO_LAMPORTS
     
 
-    def get_gas_fee(self):
-        response = self.client.get_latest_blockhash()
-        return response
+    async def get_gas_fee(self):
+        try:
+            lamports = 1_000_000_000
+            receiver_pubkey = Pubkey.from_string('Fd2vuPqWwVoxnEe8gjYonb2qq251HPwPFgtzrQoX5wKJ') # Test address for checking gas fee
+
+            ix = transfer(
+                TransferParams(
+                    from_pubkey=self.keypair.pubkey(),
+                    to_pubkey=receiver_pubkey,
+                    lamports=lamports
+                )
+            )
+
+            recent_blockhash_response = await self.client.get_latest_blockhash()
+            blockhash = recent_blockhash_response.value.blockhash
+
+            message = MessageV0.try_compile(
+                payer = self.keypair.pubkey(),
+                instructions = [ix],
+                address_lookup_table_accounts = [],
+                recent_blockhash = blockhash
+            )
+
+            fee_response = await self.client.get_fee_for_message(message)
+            return fee_response.value / SOL_TO_LAMPORTS
+        except Exception as e:
+            logger.error(f'Error getting gas fee: {e}')
+            return None
+
 
 
     async def send(self, recipient: str, amount: float):
