@@ -27,12 +27,25 @@ async def main():
             print(f'Current gas_fee: {await wallet.get_gas_fee()} SOL')
         elif choice == '3':
             try:
-                sol_amount = float(input('Input SOL amount: '))
-                tasks = [wallet.send(recipient, sol_amount) for recipient in address_list]
-                await asyncio.gather(*tasks)
-                logger.info(f'Wallet balance after all transactions: {await wallet.get_balance()}')
+                if address_list:
+                    sol_amount = float(input('Input SOL amount: '))
+                    print(f'Found {len(address_list)} wallets')
+
+                    while True:
+                        print(f'Total amount you gonna pay is {sol_amount + len(address_list) * wallet.get_gas_fee()} SOL')
+                        res = input('Do you want to continue? (1 - Yes, 2 - No)')
+                        if res == 1 or 'Yes':
+                            tasks = [wallet.send(recipient, sol_amount) for recipient in address_list]
+                            await asyncio.gather(*tasks)
+                            logger.info(f'Wallet balance after all transactions: {await wallet.get_balance()} SOL')
+                        elif res == 2 or 'No':
+                            break
+                        else:
+                            print('Invalid option. Please try again.')
+                else:
+                    logger.error('No wallets in txt file')
             except:
-                logger.error(f'Not enough SOL for all transactions')
+                logger.error('Not enough SOL for all transactions')
         elif choice == '4':
             print("Exiting...")
             break

@@ -4,6 +4,6 @@ import sys
 logger.remove()
 logger.add(
     sys.stdout,
-    format='<cyan>{time:HH:mm:ss}</cyan> | <level>{level: <8}</level> | {message}',
+    format='<level>{level: <5}</level> | {message}',
     level='DEBUG'
 )

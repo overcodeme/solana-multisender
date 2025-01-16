@@ -6,7 +6,6 @@ from solders.transaction import VersionedTransaction
 from solders.message import MessageV0
 from utils.logger import logger
 from data.config import PRIVATE_KEY
-import requests
 
 SOL_TO_LAMPORTS = 1_000_000_000
 
@@ -79,12 +78,8 @@ class Sender:
             tx = VersionedTransaction(message, [self.keypair])
 
             response = await self.client.send_transaction(tx)
-            logger.info(f'Successfully sent {amount} SOL to {recipient}. Transaction ID: {response["result"]}')
+            logger.success(f'Successfully sent {amount} SOL to {recipient}. Transaction ID: {response["result"]}')
         except Exception as e:
             logger.error(f'Error sending to {recipient}: {e}')
         finally:
             await self.client.close()
-
-    
-    async def close(self):
-        await self.client.close()
