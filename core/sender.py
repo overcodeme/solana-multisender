@@ -79,7 +79,7 @@ class Sender:
 
             response = await self.client.send_transaction(tx)
             logger.success(f'Successfully sent {amount} SOL to {recipient}. Transaction ID: {response["result"]}')
-        except Exception as e:
-            logger.error(f'Error sending to {recipient}: {e}')
+        except Exception:
+            logger.error(f'Error sending to {recipient}: {response['result']}')
         finally:
             await self.client.close()

@@ -35,13 +35,14 @@ async def main():
                     print(f'Found {len(address_list)} wallets')
 
                     while True:
-                        print(f'Total amount you gonna pay is {sol_amount + len(address_list) * wallet.get_gas_fee()} SOL')
-                        res = input('Do you want to continue? (1 - Yes, 2 - No)')
-                        if res == 1 or 'Yes':
+                        print(f'Total amount you gonna pay is {sol_amount * len(address_list) + len(address_list) * (await wallet.get_gas_fee())} SOL')
+                        res = input('Do you want to continue? (yes, no): ')
+                        os.system('cls' if os.name == 'nt' else 'clear')
+                        if res ==  'yes':
                             tasks = [wallet.send(recipient, sol_amount) for recipient in address_list]
                             await asyncio.gather(*tasks)
                             logger.info(f'Wallet balance after all transactions: {await wallet.get_balance()} SOL')
-                        elif res == 2 or 'No':
+                        elif res == 'no':
                             break
                         else:
                             print('Invalid option. Please try again.')
