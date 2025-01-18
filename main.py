@@ -22,10 +22,13 @@ async def main():
         choice = input('Choose an option(1-4): ')
 
         if choice == '1':
+            os.system('cls' if os.name == 'nt' else 'clear')
             print(f'Wallet balance: {await wallet.get_balance()} SOL')
         elif choice == '2':
+            os.system('cls' if os.name == 'nt' else 'clear')
             print(f'Current gas_fee: {await wallet.get_gas_fee()} SOL')
         elif choice == '3':
+            os.system('cls' if os.name == 'nt' else 'clear')
             try:
                 if address_list:
                     sol_amount = float(input('Input SOL amount: '))
